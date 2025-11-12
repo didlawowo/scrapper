@@ -1,0 +1,73 @@
+version: '3'
+
+vars:
+  BIN: scrapper
+  GIT_TAG:
+    sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --abbrev-ref HEAD
+  GIT_SHA:
+    sh: git rev-parse --short HEAD
+  REV: "{{.GIT_TAG}}-{{.GIT_SHA}}"
+  PWD:
+    sh: pwd
+
+tasks:
+  info:
+    desc: Show revision information
+    cmds:
+      - echo "revision {{.REV}}"
+    silent: true
+
+  pip-sync:
+    desc: Compile and sync Python requirements
+    cmds:
+      - pip-compile requirements.in
+      - pip-sync requirements.txt
+
+  build:
+    desc: Build Docker image
+    cmds:
+      - docker buildx build --load --build-arg GIT_SHA="{{.GIT_SHA}}" --build-arg GIT_TAG="{{.GIT_TAG}}" -t amerkurev/{{.BIN}}:latest --progress=plain .
+
+  lint:
+    desc: Run ruff linter on app code
+    cmds:
+      - ruff check app
+
+  fmt:
+    desc: Format code with ruff
+    deps: [lint]
+    cmds:
+      - ruff format app
+
+  test:
+    desc: Run tests in Docker container
+    cmds:
+      - docker run --rm -t -v {{.PWD}}/app:/home/pwuser/app amerkurev/{{.BIN}} ./pytest.sh
+
+  cov:
+    desc: Generate coverage report in Docker
+    cmds:
+      - docker run --rm -t -v {{.PWD}}/app:/home/pwuser/app amerkurev/{{.BIN}} coverage html
+
+  dev:
+    desc: Run development server in Docker with live reload
+    deps: [build]
+    cmds:
+      - |
+        docker run \
+          -it \
+          --rm \
+          --ipc=host \
+          --env-file=.env \
+          -v {{.PWD}}/app:/home/pwuser/app \
+          -v {{.PWD}}/user_data:/home/pwuser/user_data \
+          -v {{.PWD}}/user_scripts:/home/pwuser/user_scripts \
+          --name {{.BIN}} \
+          -p 3000:3000 \
+          amerkurev/{{.BIN}}
+
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+    silent: true
