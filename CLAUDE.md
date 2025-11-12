@@ -14,47 +14,78 @@ Scrapper is a web scraping service that extracts article content from web pages 
 
 ## Development Commands
 
-### Local Development
+### Task Runner (Taskfile)
+This project uses [Task](https://taskfile.dev/) for build automation. Install it first:
+```bash
+# macOS
+brew install go-task
+
+# Linux
+sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
+
+# Or use 'go install github.com/go-task/task/v3/cmd/task@latest'
+```
+
+### Available Tasks
+```bash
+# Show all available tasks
+task --list
+
+# Show revision information
+task info
+
+# Build Docker image
+task build
+
+# Run linter
+task lint
+
+# Format code
+task fmt
+
+# Run tests in Docker
+task test
+
+# Generate coverage report
+task cov
+
+# Run development server in Docker (with live reload)
+task dev
+
+# Compile and sync Python requirements
+task pip-sync
+```
+
+### Local Development (without Docker)
 ```bash
 # Install dependencies (before first run)
 pip install -r requirements.txt
+# or with uv (faster):
+uv pip install -r requirements.txt
 
-# Run development server (port 3001)
-make run
-# or directly:
-uvicorn --app-dir app main:app --port 3001
+# Run development server (port 3000)
+python app/main.py
+# or directly with uvicorn:
+uvicorn --app-dir app main:app --port 3000
 
-# Run tests with coverage
-make test
-# or directly:
-./runtest.sh
+# Run tests locally
+cd app && pytest
 # Coverage report saved to htmlcov/
-
-# Run linter
-make lint
-# or directly:
-pylint app/*
-```
-
-### Docker Development
-```bash
-# Build Docker image
-make docker
-
-# Run in Docker
-make docker-run
-
-# Test in Docker
-make docker-test
-
-# Lint in Docker
-make docker-lint
 ```
 
 ### Testing
-Tests are located alongside source files (e.g., [test_main.py](app/test_main.py), [test_errors.py](app/internal/test_errors.py)). Run with:
+Tests are located in test directories:
+- [app/test_main.py](app/test_main.py)
+- [app/internal/tests/](app/internal/tests/)
+- [app/router/tests/](app/router/tests/)
+
+Run with:
 ```bash
-PYTHONPATH=$(pwd)/app coverage run --source=app/ -m pytest app/
+# Using Task (in Docker)
+task test
+
+# Or locally
+cd app && pytest
 ```
 
 ## Architecture
