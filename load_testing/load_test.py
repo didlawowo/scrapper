@@ -19,7 +19,7 @@ class ParseStatus(str, Enum):
 
 DEFAULT_CONCUR_REQ = 5
 DEFAULT_URLS_FILE = 'urls.txt'
-DEFAULT_SCRAPPER_HOST = 'http://127.0.0.1:3000'
+DEFAULT_SCRAPPER_HOST = 'http://127.0.0.1:3001'
 
 
 @dataclass

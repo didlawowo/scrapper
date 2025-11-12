@@ -13,19 +13,21 @@ Scrapper is a web scraper tool designed to download web pages and extract articl
 ## Quick start
 
 Start a Scrapper instance with:
-```console
-docker run -d -p 3000:3000 --name scrapper amerkurev/scrapper:latest
-```
-Scrapper will be available at http://localhost:3000/. For more details, see [Usage](#usage)
 
+```console
+docker run -d -p 3001:3001 --name scrapper amerkurev/scrapper:latest
+```
+
+Scrapper will be available at <http://localhost:3001/>. For more details, see [Usage](#usage)
 
 ## Demo
+
 Watch a 30-second demo reel showcasing the web interface of Scrapper.
 
-https://user-images.githubusercontent.com/28217522/225941167-633576fa-c9e2-4c63-b1fd-879be2d137fa.mp4
-
+<https://user-images.githubusercontent.com/28217522/225941167-633576fa-c9e2-4c63-b1fd-879be2d137fa.mp4>
 
 ## Features
+
 Scrapper provides the following features:
 
 - **Built-in headless browser** - Integrates with [Playwright](https://github.com/microsoft/playwright) to handle JavaScript-heavy websites, cookie consent forms, and other interactive elements.
@@ -44,19 +46,22 @@ Additional capabilities include:
 - **Docker delivery** - Packaged as a Docker image for simple deployment.
 - **Open-source license** - Available under MIT license.
 
-
 ## Usage
 
 ### Getting Scrapper
+
 The Scrapper Docker image includes Playwright and all necessary browser dependencies, resulting in an image size of approximately 2 GB. Ensure sufficient disk space is available, particularly if storing screenshots.
 
 To download the latest version:
+
 ```console
 docker pull amerkurev/scrapper:latest
 ```
 
 ### Creating directories
+
 Scrapper requires two directories:
+
 1. `user_data`: Stores browser session data and caches parsing results
 2. `user_scripts`: Contains custom JavaScript scripts that can be injected into pages
 
@@ -69,6 +74,7 @@ ls -l
 ```
 
 The output should show:
+
 ```
 drwxr-xr-x 2 1001 1001 4096 Mar 17 23:23 user_data
 drwxr-xr-x 2 1001 1001 4096 Mar 17 23:23 user_scripts
@@ -84,8 +90,8 @@ drwxr-xr-x 2 1001 1001 4096 Mar 17 23:23 user_scripts
 >
 > Setting `chown 1001:1001` on macOS will prevent Scrapper from writing to these directories!
 
-
 ### Managing Scrapper Cache
+
 The Scrapper cache is stored in the `user_data/_res` directory. For automated cache management, configure periodic cleanup:
 
 ```console
@@ -95,18 +101,20 @@ find /path/to/user_data/_res -ctime +7 -delete
 This example deletes cache files older than 7 days.
 
 ### Using Scrapper
+
 After preparing directories, run Scrapper:
+
 ```console
-docker run -d -p 3000:3000 -v $(pwd)/user_data:/home/pwuser/user_data -v $(pwd)/user_scripts:/home/pwuser/user_scripts --name scrapper amerkurev/scrapper:latest
+docker run -d -p 3001:3001 -v $(pwd)/user_data:/home/pwuser/user_data -v $(pwd)/user_scripts:/home/pwuser/user_scripts --name scrapper amerkurev/scrapper:latest
 ```
 
-Access the web interface at http://localhost:3000/
+Access the web interface at <http://localhost:3001/>
 
 Monitor logs with:
+
 ```console
 docker logs -f scrapper
 ```
-
 
 ## Configuration Options
 
@@ -115,7 +123,7 @@ Scrapper can be configured using environment variables. You can set these either
 | Environment Variable | Description | Default |
 | ------------------------- | ------------------------------------------------------------------ | --------------------- |
 | HOST | Interface address to bind the server to | 0.0.0.0 |
-| PORT | Web interface port number | 3000 |
+| PORT | Web interface port number | 3001 |
 | LOG_LEVEL | Logging detail level (debug, info, warning, error, critical) | info |
 | BASIC_HTPASSWD | Path to the htpasswd file for basic authentication | /.htpasswd |
 | BROWSER_TYPE | Browser type to use (chromium, firefox, webkit) | chromium |
@@ -139,78 +147,85 @@ DEBUG=false
 To use an environment file with Docker, include it when running the container:
 
 ```bash
-docker run -d --name scrapper --env-file=.env -v $(pwd)/user_data:/home/pwuser/user_data -v $(pwd)/user_scripts:/home/pwuser/user_scripts -p 3000:3000 amerkurev/scrapper:latest
+docker run -d --name scrapper --env-file=.env -v $(pwd)/user_data:/home/pwuser/user_data -v $(pwd)/user_scripts:/home/pwuser/user_scripts -p 3001:3001 amerkurev/scrapper:latest
 ```
-
 
 ## Basic Authentication
 
 Scrapper supports HTTP basic authentication to secure access to the web interface. Follow these steps to enable it:
 
 1. Create an htpasswd file with bcrypt-encrypted passwords:
+
 ```bash
 htpasswd -cbB .htpasswd admin yourpassword
 ```
 
 Add additional users with:
+
 ```bash
 htpasswd -bB .htpasswd another_user anotherpassword
 ```
 
 2. Mount the htpasswd file when running Scrapper:
+
 ```bash
 docker run -d --name scrapper \
     -v $(pwd)/user_data:/home/pwuser/user_data \
     -v $(pwd)/user_scripts:/home/pwuser/user_scripts \
     -v $(pwd)/.htpasswd:/.htpasswd \
-    -p 3000:3000 \
+    -p 3001:3001 \
     amerkurev/scrapper:latest
 ```
 
 3. If you want to use a custom path for the htpasswd file, specify it with the `BASIC_HTPASSWD` environment variable:
+
 ```bash
 docker run -d --name scrapper \
     -v $(pwd)/user_data:/home/pwuser/user_data \
     -v $(pwd)/user_scripts:/home/pwuser/user_scripts \
     -v $(pwd)/custom/path/.htpasswd:/auth/.htpasswd \
     -e BASIC_HTPASSWD=/auth/.htpasswd \
-    -p 3000:3000 \
+    -p 3001:3001 \
     amerkurev/scrapper:latest
 ```
 
 Authentication will be required for all requests to Scrapper once enabled.
 
-
 ## HTTPS Support
+
 Scrapper supports HTTPS connections with SSL certificates for secure access to the web interface. Follow these steps to enable it:
 
 1. Prepare your SSL certificate and key files:
+
 ```bash
 # Example of generating a self-signed certificate (for testing only)
 openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -days 365 -subj '/CN=localhost'
 ```
+
 2. Mount the SSL files when running Scrapper:
+
 ```bash
 docker run -d --name scrapper \
     -v $(pwd)/user_data:/home/pwuser/user_data \
     -v $(pwd)/user_scripts:/home/pwuser/user_scripts \
     -v $(pwd)/cert.pem:/.ssl/cert.pem \
     -v $(pwd)/key.pem:/.ssl/key.pem \
-    -p 3000:3000 \
+    -p 3001:3001 \
     amerkurev/scrapper:latest
 ```
 
-When SSL certificates are detected, Scrapper automatically enables HTTPS mode. You can then access the secure interface at https://localhost:3000/.
+When SSL certificates are detected, Scrapper automatically enables HTTPS mode. You can then access the secure interface at <https://localhost:3001/>.
 
 For production use, always use properly signed certificates from a trusted certificate authority.
 
-
 ## API Reference
-### GET /api/article?url=...
+
+### GET /api/article?url=
+
 The Scrapper API provides a straightforward interface accessible through a single endpoint:
 
 ```console
-curl -X GET "localhost:3000/api/article?url=https://en.wikipedia.org/wiki/web_scraping"
+curl -X GET "localhost:3001/api/article?url=https://en.wikipedia.org/wiki/web_scraping"
 ```
 
 Use the GET method on the `/api/article` endpoint with the required `url` parameter specifying the target webpage. Scrapper will load the page in a browser, extract the article text, and return it in JSON format.
@@ -220,6 +235,7 @@ All other parameters are optional with default values. The web interface provide
 ### Request Parameters
 
 #### Scrapper settings
+
 | Parameter | Description | Default |
 | :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
 | `url` | Page URL. The page should contain the text of the article that needs to be extracted. |   |
@@ -230,6 +246,7 @@ All other parameters are optional with default values. The web interface provide
 | `user-scripts-timeout` | Waits for the given timeout in milliseconds after users scripts injection. For example if you want to navigate through page to specific content, set a longer period (higher value). The default value is 0, which means no sleep. | `0` |
 
 #### Browser settings
+
 | Parameter | Description | Default |
 | :---------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------- |
 | `incognito` | Allows creating `incognito` browser contexts. Incognito browser contexts don't write any browsing data to disk. | `true` |
@@ -251,14 +268,16 @@ All other parameters are optional with default values. The web interface provide
 | `extra-http-headers` | Contains additional HTTP headers to be sent with every request. Example: `X-API-Key:123456;X-Auth-Token:abcdef`. |   |
 
 #### Network proxy settings
+
 | Parameter | Description | Default |
 | :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
-| `proxy-server` | Proxy to be used for all requests. HTTP and SOCKS proxies are supported, for example http://myproxy.com:3128 or socks5://myproxy.com:3128. Short form myproxy.com:3128 is considered an HTTP proxy. | |
+| `proxy-server` | Proxy to be used for all requests. HTTP and SOCKS proxies are supported, for example <http://myproxy.com:3128> or socks5://myproxy.com:3128. Short form myproxy.com:3128 is considered an HTTP proxy. | |
 | `proxy-bypass` | Optional comma-separated domains to bypass proxy, for example `.com, chromium.org, .domain.com`. |   |
 | `proxy-username` | Optional username to use if HTTP proxy requires authentication. |   |
 | `proxy-password` | Optional password to use if HTTP proxy requires authentication. |   |
 
 #### Readability settings
+
 | Parameter | Description | Default |
 | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
 | `max-elems-to-parse` | The maximum number of elements to parse. The default value is 0, which means no limit. | 0 |
@@ -266,6 +285,7 @@ All other parameters are optional with default values. The web interface provide
 | `char-threshold` | The number of characters an article must have in order to return a result. | 500 |
 
 ### Response fields
+
 The response to the `/api/article` request returns a JSON object containing the following fields:
 
 | Parameter | Description | Type |
@@ -291,7 +311,9 @@ The response to the `/api/article` request returns a JSON object containing the 
 | `publishedTime` | article publication time | null or str |
 
 ### Error handling
+
 Error responses follow this structure:
+
 ```json
 {
   "detail": [
@@ -302,22 +324,26 @@ Error responses follow this structure:
   ]
 }
 ```
+
 For detailed error information, consult the Docker container logs.
 
-### GET /api/links?url=...
+### GET /api/links?url=
+
 To collect news article links from website main pages:
 
 ```console
-curl -X GET "localhost:3000/api/links?url=https://www.cnet.com/"
+curl -X GET "localhost:3001/api/links?url=https://www.cnet.com/"
 ```
 
 #### Link parser settings
+
 | Parameter | Description | Default |
 | :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
 | `text-len-threshold` | The median (middle value) of the link text length in characters. The default value is 40 characters. Hyperlinks must adhere to this criterion to be included in the results. However, this criterion is not a strict threshold value, and some links may ignore it. | 40 |
 | `words-threshold` | The median (middle value) of the number of words in the link text. The default value is 3 words. Hyperlinks must adhere to this criterion to be included in the results. However, this criterion is not a strict threshold value, and some links may ignore it. | 3 |
 
 ### Response fields
+
 The response to the `/api/links` request returns a JSON object that contains fields, which are described in the table below.
 
 | Parameter | Description | Type |
@@ -340,7 +366,8 @@ The response to the `/api/links` request returns a JSON object that contains fie
 - linux/arm64
 
 ## Status
-The project is under active development and may have breaking changes until `v1` is released. 
+
+The project is under active development and may have breaking changes until `v1` is released.
 As of version `v0.17.0`, Scrapper is considered production-ready, with multiple installations running in production environments.
 
 ## License

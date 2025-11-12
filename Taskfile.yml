@@ -63,7 +63,7 @@ tasks:
           -v {{.PWD}}/user_data:/home/pwuser/user_data \
           -v {{.PWD}}/user_scripts:/home/pwuser/user_scripts \
           --name {{.BIN}} \
-          -p 3000:3000 \
+          -p 3001:3001 \
           amerkurev/{{.BIN}}
 
   default:

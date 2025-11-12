@@ -63,10 +63,10 @@ pip install -r requirements.txt
 # or with uv (faster):
 uv pip install -r requirements.txt
 
-# Run development server (port 3000)
+# Run development server (port 3001)
 python app/main.py
 # or directly with uvicorn:
-uvicorn --app-dir app main:app --port 3000
+uvicorn --app-dir app main:app --port 3001
 
 # Run tests locally
 cd app && pytest

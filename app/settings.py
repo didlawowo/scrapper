@@ -38,7 +38,7 @@ class ScreenshotType(str, Enum):
 class Settings(BaseSettings):
     # general settings
     host: str = Field(alias='HOST', default='0.0.0.0', description='Interface address to bind the server to')
-    port: PositiveInt = Field(alias='PORT', default=3000, description='Web interface port number')
+    port: PositiveInt = Field(alias='PORT', default=3001, description='Web interface port number')
     in_docker: bool = Field(alias='IN_DOCKER', default=False)
     log_level: LogLevel = Field(alias='LOG_LEVEL', default=LogLevel.INFO, description='Logging detail level')
     basic_htpasswd: str = Field(
