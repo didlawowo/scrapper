@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "scrapper": {
+      "command": "python",
+      "args": ["-m", "mcp_server"],
+      "cwd": "/path/to/scrapper/app",
+      "env": {
+        "BROWSER_TYPE": "chromium",
+        "BROWSER_CONTEXT_LIMIT": "10"
+      }
+    }
+  }
+}
