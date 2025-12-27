@@ -2,9 +2,10 @@ FROM mcr.microsoft.com/playwright/python:v1.51.0-noble
 # python==3.12.3
 
 # RUN apt update
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r ./requirements.txt
+COPY pyproject.yaml ./
+RUN pip install --no-cache-dir uv
 
+RUN uv sync
 ARG GIT_SHA
 ARG GIT_TAG
 
