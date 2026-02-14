@@ -17,11 +17,10 @@ tasks:
       - echo "revision {{.REV}}"
     silent: true
 
-  pip-sync:
-    desc: Compile and sync Python requirements
+  install:
+    desc: Install project dependencies from pyproject.toml
     cmds:
-      - pip-compile requirements.in
-      - pip-sync requirements.txt
+      - pip install -e ".[dev]"
 
   build:
     desc: Build Docker image

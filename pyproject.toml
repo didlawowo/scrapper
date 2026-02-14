@@ -28,7 +28,7 @@ dependencies = [
     "tldextract~=5.3.0",
 
     # Security (authentication)
-    "bcrypt~=4.2.1",
+    "bcrypt~=5.0.0",
 
     # MCP server
     "mcp~=1.25.0",

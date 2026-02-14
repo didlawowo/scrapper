@@ -2,8 +2,8 @@ FROM mcr.microsoft.com/playwright/python:v1.51.0-noble
 # python==3.12.3
 
 # RUN apt update
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r ./requirements.txt
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir $(python -c "import tomllib; deps=tomllib.load(open('pyproject.toml','rb'))['project']['dependencies']; print(' '.join(deps))")
 
 ARG GIT_SHA
 ARG GIT_TAG

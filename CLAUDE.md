@@ -52,16 +52,16 @@ task cov
 # Run development server in Docker (with live reload)
 task dev
 
-# Compile and sync Python requirements
-task pip-sync
+# Install project dependencies
+task install
 ```
 
 ### Local Development (without Docker)
 ```bash
 # Install dependencies (before first run)
-pip install -r requirements.txt
+pip install -e ".[dev]"
 # or with uv (faster):
-uv pip install -r requirements.txt
+uv pip install -e ".[dev]"
 
 # Run development server (port 3001)
 python app/main.py
